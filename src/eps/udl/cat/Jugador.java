@@ -78,7 +78,7 @@ public class Jugador {
         System.out.print(nom + "("+ cost + "/" + punts + ")");
     }
 
-    String stringPrintCostPunts(){
+    String toStringCostPunts(){
         return (nom + "("+ cost + "/" + punts + ")");
     }
 }

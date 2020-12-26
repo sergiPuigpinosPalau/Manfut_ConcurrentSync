@@ -151,27 +151,21 @@ public class Market {
             int pivot = remaining / (numOfThreads-i);
             int prevThreadEnd = i==0 ? first : threads[i-1].getEnd()+1;
             int threadEnd = i==numOfThreads-1 ? end : prevThreadEnd+pivot;
-            threads[i] = new threadEvaluator(prevThreadEnd, threadEnd , PresupostFitxatges, this, M);
+            threads[i] = new threadEvaluator(prevThreadEnd, threadEnd , PresupostFitxatges, this, M, numOfThreads);
             threads[i].start();
             remaining -= pivot;
         }
 
-        //Join threads and get the data from each one
-        //TODO empty message queue
+        //Wait for signal
         try{
-            for (int i=0; i<numOfThreads; ++i){
-                threads[i].join();
-               /* if (threads[i].isNull()) //To avoid triggering a NULL exception
-                    continue;
-                if (i==0 || threads[i].getMillorEquip().PuntuacioEquip() > max){
-                    MillorEquip = threads[i].getMillorEquip();
-                    max = MillorEquip.PuntuacioEquip();
-                }*/
-            }
+            threadEvaluator.evaluatorLock.lock();
+            threadEvaluator.evaluatorsEnded.await();
+        }catch (java.lang.InterruptedException exception) {
+            System.out.println("Program Interrupted");
+        }finally {
+            threadEvaluator.evaluatorLock.unlock();
         }
-        catch (Exception e){
-            System.err.println("Join Exception: " + e.getMessage());
-        }
+
         return(threadEvaluator.MillorEquip);
     }
 

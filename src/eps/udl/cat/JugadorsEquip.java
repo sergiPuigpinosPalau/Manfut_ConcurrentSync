@@ -189,13 +189,13 @@ public class JugadorsEquip {
     }
 
 
-    String stringPrintEquipJugadors()
+    String toStringEquipJugadors()
     {
         int x;
         String rtnString = "\n";
 
         rtnString = rtnString + ("   Porters: ");
-        rtnString = rtnString + myMarket.GetPorter(Porter).stringPrintCostPunts();
+        rtnString = rtnString + myMarket.GetPorter(Porter).toStringCostPunts();
         rtnString = rtnString + "\n";
 
 
@@ -203,7 +203,7 @@ public class JugadorsEquip {
         rtnString = rtnString + ("   Defenses: ");
         for(x=0;x<DPosDefensors;x++)
         {
-            rtnString = rtnString + myMarket.GetDefensor(Defensors[x]).stringPrintCostPunts();
+            rtnString = rtnString + myMarket.GetDefensor(Defensors[x]).toStringCostPunts();
             rtnString = rtnString + (", ");
         }
         rtnString = rtnString + "\n";
@@ -211,7 +211,7 @@ public class JugadorsEquip {
         rtnString = rtnString + ("   Mitjos: ");
         for(x=0;x<DPosMitjos;x++)
         {
-            rtnString = rtnString + myMarket.GetMitg(Mitjos[x]).stringPrintCostPunts();
+            rtnString = rtnString + myMarket.GetMitg(Mitjos[x]).toStringCostPunts();
             rtnString = rtnString + (", ");
         }
         rtnString = rtnString + "\n";
@@ -219,7 +219,7 @@ public class JugadorsEquip {
         rtnString = rtnString + ("   Delanters: ");
         for(x=0;x<DPosDelanters;x++)
         {
-            rtnString = rtnString + myMarket.GetDelanter(Delanters[x]).stringPrintCostPunts();
+            rtnString = rtnString + myMarket.GetDelanter(Delanters[x]).toStringCostPunts();
             rtnString = rtnString +(", ");
         }
         //rtnString = rtnString + "\n";

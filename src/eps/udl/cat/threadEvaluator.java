@@ -7,8 +7,8 @@ Grau Informàtica
 --------------------------------------------------------------- */
 package eps.udl.cat;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class threadEvaluator extends Thread{
 
@@ -17,10 +17,12 @@ public class threadEvaluator extends Thread{
     private final int PresupostFitxatges;
     private final Market market;
     private final int M;
+    private final int numOfThreads;
 
     //private static boolean isNull = false;
     public static JugadorsEquip MillorEquip = null;
     public static int MaxPuntuacio = -1;
+    public static int threadsFinished = 0;
     //public static threadMessenger messenger;
 
     //Statistics
@@ -29,19 +31,34 @@ public class threadEvaluator extends Thread{
     private int numValidComb = 0;
     private int avgCostValidComb = 0;
     private int avgScoreValidComb = 0;
-    //Score, Combination
-    //private int[] bestCombination = new int[2];
     private JugadorsEquip bestCombination;
     private int bestScore = 0;
     private JugadorsEquip worseCombination;
     private int worseScore = 0;
 
-    threadEvaluator(int first, int end, int PresupostFitxatges, Market market, int M){
+    //Global Statistics
+    public static int globalNumComb = 0;
+    public static int globalNumInvComb = 0;
+    public static int globalNumValidComb = 0;
+    public static int globalAvgCostValidComb = 0;
+    public static int globalAvgScoreValidComb = 0;
+    public static JugadorsEquip globalBestCombination;
+    public static int globalBestScore = 0;
+    public static JugadorsEquip globalWorseCombination;
+    public static int globalWorseScore = 0;
+
+    //Locks
+    public static final ReentrantLock evaluatorLock = new ReentrantLock();
+    public static final Condition evaluatorFinished = evaluatorLock.newCondition();
+    public static final Condition evaluatorsEnded = evaluatorLock.newCondition();
+
+    threadEvaluator(int first, int end, int PresupostFitxatges, Market market, int M, int numOfThreads){
         this.first = first;
         this.end = end;
         this.market = market;
         this.PresupostFitxatges = PresupostFitxatges;
         this.M = M;
+        this.numOfThreads = numOfThreads;
     }
 
     @Override
@@ -74,26 +91,75 @@ public class threadEvaluator extends Thread{
             CalculateStatistics(jugadors, costEquip, puntuacioEquip);
 
             if (numComb%M == 0)
-                threadMessenger.addMessageToQueue(Error.color_green + "*******THREAD " + Thread.currentThread().getId()+ " STATISTICS******"+
-                        "\nNúmero de Combinaciones evaluadas: " + numComb +
-                        "\nNúmero de combinaciones no válidas: " + numInvComb +
-                        "\nCoste promedio de las combinaciones válidas: " + avgCostValidComb +
-                        "\nPuntuación promedio de las combinaciones válidas: " + avgScoreValidComb +
-                        "\nMejor combinación (desde el punto de vista de la puntuación): " + bestCombination.stringPrintEquipJugadors() +
-                        "\nPeor combinación (desde el punto de vista de la puntuación): " + worseCombination.stringPrintEquipJugadors() +
-                        "\n********************************************************" + Error.end_color);
-                //printStatistics(this.numComb, this.numInvComb, this.avgCostValidComb, this.avgScoreValidComb, this.bestCombination);
+                printStatistics();
 
+        }
+
+        //Wait for threads; print global statistics; send signal to parent
+        try{
+            evaluatorLock.lock();
+            threadsFinished++;
+            //Wait for the others
+            while (threadsFinished < numOfThreads)
+                evaluatorFinished.await();
+            printStatistics();
+            calculateGlobalStatistics();
+            //Last thread prints global and sends signal to parent
+            if (threadsFinished == numOfThreads*2 - 1){
+                printGlobalStatistics();
+                threadMessenger.forcePrint();
+                evaluatorsEnded.signalAll();
+            }
+            threadsFinished++;
+            evaluatorFinished.signal();
+        } catch (java.lang.InterruptedException exception) {
+            System.out.println("Program Interrupted");
+        } finally {
+            evaluatorLock.unlock();
         }
     }
 
+    private void printStatistics(){
+        threadMessenger.addMessageToQueue(Error.color_green + "*******THREAD " + Thread.currentThread().getId()+ " STATISTICS******"+
+                "\nNúmero de Combinaciones evaluadas: " + numComb +
+                "\nNúmero de combinaciones no válidas: " + numInvComb +
+                "\nCoste promedio de las combinaciones válidas: " + avgCostValidComb +
+                "\nPuntuación promedio de las combinaciones válidas: " + avgScoreValidComb +
+                "\nMejor combinación (desde el punto de vista de la puntuación): " + bestCombination.toStringEquipJugadors() +
+                "\nPeor combinación (desde el punto de vista de la puntuación): " + worseCombination.toStringEquipJugadors() +
+                "\n********************************************************" + Error.end_color);
+    }
 
+    public void printGlobalStatistics(){
+        threadMessenger.addMessageToQueue(Error.color_blue + "*******GLOBAL STATISTICS******"+
+                "\nNúmero de Combinaciones evaluadas: " + globalNumComb +
+                "\nNúmero de combinaciones no válidas: " + globalNumInvComb +
+                "\nCoste promedio de las combinaciones válidas: " + globalAvgCostValidComb +
+                "\nPuntuación promedio de las combinaciones válidas: " + globalAvgScoreValidComb +
+                "\nMejor combinación (desde el punto de vista de la puntuación): " + globalBestCombination.toStringEquipJugadors() +
+                "\nPeor combinación (desde el punto de vista de la puntuación): " + globalWorseCombination.toStringEquipJugadors() +
+                "\n********************************************************" + Error.end_color);
+    }
+
+    public void calculateGlobalStatistics(){
+        globalNumComb += numComb;
+        globalNumInvComb += numInvComb;
+        globalNumValidComb += numValidComb;
+        globalAvgCostValidComb = ((globalAvgCostValidComb * globalNumValidComb) + (avgCostValidComb * numValidComb)) / globalNumValidComb;
+        globalAvgScoreValidComb = ((globalAvgScoreValidComb * globalNumValidComb) + (avgScoreValidComb * numValidComb)) / globalNumValidComb;
+        if (bestScore > globalBestScore){    //Best combination regarding points
+            globalBestScore = bestScore;
+            globalBestCombination = bestCombination;
+        }else if (worseScore < globalWorseScore || globalWorseScore == 0) {   //Worse combination regarding points
+            globalWorseScore = worseScore;
+            globalWorseCombination = worseCombination;
+        }
+    }
 
     private void CalculateStatistics(JugadorsEquip jugadors, int costEquip, int puntuacioEquip) {
-        avgCostValidComb = ((avgCostValidComb * numValidComb) + costEquip)/(numValidComb+1);
-        avgScoreValidComb = ((avgScoreValidComb * numValidComb) + puntuacioEquip)/(numValidComb+1);
+        avgCostValidComb = ((avgCostValidComb * numValidComb) + costEquip) / (numValidComb+1);
+        avgScoreValidComb = ((avgScoreValidComb * numValidComb) + puntuacioEquip) / (numValidComb+1);
         numValidComb++;
-
         if (puntuacioEquip > bestScore){    //Best combination
             bestScore = puntuacioEquip;
             bestCombination = jugadors;
