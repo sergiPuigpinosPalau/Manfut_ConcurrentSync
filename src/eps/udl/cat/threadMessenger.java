@@ -8,10 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class threadMessenger extends Thread{
     private static final int LIST_SIZE = 100;
     private static final LinkedList<String> messageList = new LinkedList<>();
-    public static final ReentrantLock messengerLock = new ReentrantLock();
-    public static final Condition itemAdded = messengerLock.newCondition();
-    public static final Semaphore semaphore = new Semaphore(LIST_SIZE);
-    public static boolean bForcePrint = false;
+    private static final ReentrantLock messengerLock = new ReentrantLock();
+    private static final Condition itemAdded = messengerLock.newCondition();
+    private static final Semaphore semaphore = new Semaphore(LIST_SIZE);
+    private static boolean bForcePrint = false;
 
 
     private void printMessages(){

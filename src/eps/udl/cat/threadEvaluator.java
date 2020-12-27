@@ -109,9 +109,10 @@ public class threadEvaluator extends Thread{
                 printGlobalStatistics();
                 threadMessenger.forcePrint();
                 evaluatorsEnded.signalAll();
+            } else {
+                threadsFinished++;
+                evaluatorFinished.signal();
             }
-            threadsFinished++;
-            evaluatorFinished.signal();
         } catch (java.lang.InterruptedException exception) {
             System.out.println("Program Interrupted");
         } finally {
@@ -186,11 +187,3 @@ public class threadEvaluator extends Thread{
 
     public int getEnd() { return end; }
 }
-
-
-
-//System.out.println(Error.color_red +" Invalid." + Error.end_color);
-//System.out.print("Thread: " + Thread.currentThread().getId() + " Team " + equip + "->");
-//threadMessenger.addMessageToQueue(Error.color_green + " Cost: " + jugadors.CostEquip() + " Points: " + jugadors.PuntuacioEquip() + ". "+ Error.end_color);
-//System.out.println(Error.color_green + " Cost: " + jugadors.CostEquip() + " Points: " + jugadors.PuntuacioEquip() + ". "+ Error.end_color);
-//System.out.println(" Cost: " + jugadors.CostEquip() + " Points: " + jugadors.PuntuacioEquip() + ".\r");
