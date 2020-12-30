@@ -156,7 +156,7 @@ public class Market {
             remaining -= pivot;
         }
 
-        //Wait for signal
+        //Wait for the ending signal
         try{
             threadEvaluator.evaluatorLock.lock();
             threadEvaluator.evaluatorsEnded.await();
@@ -164,6 +164,17 @@ public class Market {
             System.out.println("Program Interrupted");
         }finally {
             threadEvaluator.evaluatorLock.unlock();
+        }
+
+        //Wait for messenger to print all and exit
+        try{
+            threadMessenger.messengerLock.lock();
+            threadMessenger.killMessenger();
+            threadMessenger.messengerEnded.await();
+        }catch (java.lang.InterruptedException exception) {
+            System.out.println("Program Interrupted");
+        }finally {
+            threadMessenger.messengerLock.unlock();
         }
 
         return(threadEvaluator.MillorEquip);
