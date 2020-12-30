@@ -27,7 +27,7 @@ public class threadMessenger extends Thread{
             semaphore.acquire();
             messengerLock.lock();
             messageList.add(message);
-            itemAdded.signalAll();
+            itemAdded.signal();
         } catch (java.lang.InterruptedException exception) {
             System.out.println("Program Interrupted");
         } finally {
@@ -37,7 +37,7 @@ public class threadMessenger extends Thread{
 
     public static void killMessenger(){
         exitMess=true;
-        itemAdded.signalAll();
+        itemAdded.signal();
     }
 
     @Override

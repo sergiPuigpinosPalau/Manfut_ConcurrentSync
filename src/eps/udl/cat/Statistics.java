@@ -9,7 +9,7 @@ public class Statistics {
     private JugadorsEquip bestCombination;
     private int bestScore;
     private JugadorsEquip worseCombination;
-    private int worseScore = -1;
+    private int worseScore;
 
 
     public void calculateStatistics(JugadorsEquip jugadors, int costEquip, int puntuacioEquip) {
@@ -19,11 +19,11 @@ public class Statistics {
         if (puntuacioEquip > bestScore){    //Best combination
             bestScore = puntuacioEquip;
             bestCombination = jugadors;
-        }else if (worseScore == -1 || puntuacioEquip < worseScore) {   //Worse combination
+        }else if (worseScore == 0 || puntuacioEquip < worseScore) {   //Worse combination
             worseScore = puntuacioEquip;
             worseCombination = jugadors;
         }
-    }//TODO -1 in C
+    }
 
     public void printStatistics(){
         threadMessenger.addMessageToQueue( Error.color_green + "*******THREAD " + Thread.currentThread().getId()+ " STATISTICS******"+
@@ -42,15 +42,15 @@ public class Statistics {
         numValidComb += evaluatorStatistics.getNumValidComb();
         avgCostValidComb = ((avgCostValidComb * numValidComb) + (evaluatorStatistics.getAvgCostValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
         avgScoreValidComb = ((avgScoreValidComb * numValidComb) + (evaluatorStatistics.getAvgScoreValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
-        if (evaluatorStatistics.getBestScore() > bestScore){    //Best combination regarding points
+        if (bestScore == 0 || evaluatorStatistics.getBestScore() > bestScore){    //Best combination regarding points
             bestScore = evaluatorStatistics.getBestScore();
             bestCombination = evaluatorStatistics.getBestCombination();
         }
-        if (worseScore == -1|| evaluatorStatistics.getWorseScore() < worseScore) {   //Worse combination regarding points
+        if (worseScore == 0 || evaluatorStatistics.getWorseScore() < worseScore) {   //Worse combination regarding points
             worseScore = evaluatorStatistics.getWorseScore();
             worseCombination = evaluatorStatistics.getWorseCombination();
         }
-    }//TODO fix else if in C
+    }
 
     public void printGlobalStatistics(){
         threadMessenger.addMessageToQueue(Error.color_blue + "*******GLOBAL STATISTICS******"+

@@ -89,7 +89,7 @@ public class threadEvaluator extends Thread{
             //Last thread prints global and sends signal to parent
             if (threadsFinished == numOfThreads*2 - 1){
                 threadEvaluator.globalStatistics.printGlobalStatistics();
-                evaluatorsEnded.signal();//TODO signal or signalAll
+                evaluatorsEnded.signalAll();
             } else {
                 threadsFinished++;
                 evaluatorFinished.signal();
@@ -106,7 +106,7 @@ public class threadEvaluator extends Thread{
         if (puntuacioEquip > threadEvaluator.MaxPuntuacio && costEquip < PresupostFitxatges)
         {
             threadMessenger.addMessageToQueue(Error.color_green + "Thread: " + Thread.currentThread().getId() + " Team " + equip + " -> " + " Cost: " + costEquip + " Points: " + puntuacioEquip + ". "+ Error.end_color);
-            // We have a new partial optimal team.//TODO do it in C, thread: ...
+            // We have a new partial optimal team.
             threadEvaluator.MaxPuntuacio=puntuacioEquip;
             threadEvaluator.MillorEquip = jugadors;
         }
