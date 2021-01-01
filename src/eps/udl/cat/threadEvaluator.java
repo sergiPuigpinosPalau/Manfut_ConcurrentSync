@@ -22,7 +22,9 @@ public class threadEvaluator extends Thread{
     //private static boolean isNull = false;
     public static JugadorsEquip MillorEquip = null;
     public static int MaxPuntuacio = -1;
+    public static int threadsWaitingSummary = 0;
     public static int threadsFinished = 0;
+    public static boolean finalPrint = false;
     //public static threadMessenger messenger;
 
     private final Statistics statistics = new Statistics();
@@ -32,6 +34,7 @@ public class threadEvaluator extends Thread{
     public static final ReentrantLock evaluatorLock = new ReentrantLock();
     public static final Condition evaluatorFinished = evaluatorLock.newCondition();
     public static final Condition evaluatorsEnded = evaluatorLock.newCondition();
+    public static final Condition evaluatorFinishedPrinting = evaluatorLock.newCondition();
 
 
     threadEvaluator(int first, int end, int PresupostFitxatges, Market market, int M, int numOfThreads){
@@ -50,11 +53,16 @@ public class threadEvaluator extends Thread{
         {
             JugadorsEquip jugadors;
 
-            // Get playes from team number. Returns false if the team is not valid.
-            if ((jugadors=market.ObtenirJugadorsEquip(new IdEquip(equip)))==null)
-                continue;
-
             statistics.incrementNumComb();
+
+            if (statistics.getNumComb()%M == 0)
+                statisticsSummary();
+
+            // Get playes from team number. Returns false if the team is not valid.
+            if ((jugadors=market.ObtenirJugadorsEquip(new IdEquip(equip)))==null) {
+                statistics.incrementNumInvComb();
+                continue;
+            }
 
             // Reject teams with repeated players.
             if (jugadors.JugadorsRepetits())
@@ -70,31 +78,43 @@ public class threadEvaluator extends Thread{
             checkTeam(equip, jugadors, this.PresupostFitxatges, costEquip, puntuacioEquip);
 
             //Calculate statistics
-            statistics.calculateStatistics(jugadors, costEquip, puntuacioEquip);
-
-            if (statistics.getNumComb()%M == 0)
-                statistics.printStatistics();
-
+            statistics.calculateStatistics(jugadors, costEquip, puntuacioEquip, PresupostFitxatges);
         }
 
         //Wait for threads; print global statistics; send signal to parent
+        threadsFinished++;
+        while (threadsFinished <= numOfThreads){
+            if (threadsFinished == numOfThreads)
+                finalPrint=true;
+            statisticsSummary();
+        }
+    }
+
+    public void statisticsSummary() {
         try{
             evaluatorLock.lock();
-            threadsFinished++;
+            threadsWaitingSummary++;
             //Wait for the others
-            while (threadsFinished < numOfThreads)
+            while (threadsWaitingSummary < numOfThreads)
                 evaluatorFinished.await();
             statistics.printStatistics();
             threadEvaluator.globalStatistics.calculateGlobalStatistics(statistics);
             //Last thread prints global and sends signal to parent
-            if (threadsFinished == numOfThreads*2 - 1){
+            if (threadsWaitingSummary == numOfThreads*2 - 1){
                 threadEvaluator.globalStatistics.printGlobalStatistics();
-                evaluatorsEnded.signalAll();
+                threadsWaitingSummary = 0;
+                threadEvaluator.globalStatistics.formatData();
+                evaluatorFinishedPrinting.signalAll();
+                if (finalPrint) {
+                    threadsFinished++;
+                    evaluatorsEnded.signalAll();
+                }
             } else {
-                threadsFinished++;
+                threadsWaitingSummary++;
                 evaluatorFinished.signal();
+                evaluatorFinishedPrinting.await();
             }
-        } catch (java.lang.InterruptedException exception) {
+        } catch (InterruptedException exception) {
             System.out.println("Program Interrupted");
         } finally {
             evaluatorLock.unlock();

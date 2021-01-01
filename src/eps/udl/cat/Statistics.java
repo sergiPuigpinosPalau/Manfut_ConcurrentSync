@@ -1,22 +1,30 @@
 package eps.udl.cat;
 
 public class Statistics {
+
     private int numComb;
     private int numInvComb;
     private int numValidComb;
-    private int avgCostValidComb;
-    private int avgScoreValidComb;
+    private float avgCostValidComb;
+    private float avgScoreValidComb;
     private JugadorsEquip bestCombination;
     private int bestScore;
     private JugadorsEquip worseCombination;
     private int worseScore;
 
+    public void formatData() {
+        this.numComb = 0;
+        this.numInvComb = 0;
+        this.numValidComb = 0;
+        this.avgCostValidComb = 0;
+        this.avgScoreValidComb = 0;
+    }
 
-    public void calculateStatistics(JugadorsEquip jugadors, int costEquip, int puntuacioEquip) {
+    public void calculateStatistics(JugadorsEquip jugadors, int costEquip, int puntuacioEquip, int PresupostFitxatges) {
         avgCostValidComb = ((avgCostValidComb * numValidComb) + costEquip) / (numValidComb+1);
         avgScoreValidComb = ((avgScoreValidComb * numValidComb) + puntuacioEquip) / (numValidComb+1);
         numValidComb++;
-        if (puntuacioEquip > bestScore){    //Best combination
+        if (puntuacioEquip > bestScore && costEquip < PresupostFitxatges){    //Best combination
             bestScore = puntuacioEquip;
             bestCombination = jugadors;
         }else if (worseScore == 0 || puntuacioEquip < worseScore) {   //Worse combination
@@ -31,8 +39,10 @@ public class Statistics {
                 "\nNúmero de combinaciones no válidas: " + numInvComb +
                 "\nCoste promedio de las combinaciones válidas: " + avgCostValidComb +
                 "\nPuntuación promedio de las combinaciones válidas: " + avgScoreValidComb +
-                "\nMejor combinación (desde el punto de vista de la puntuación): " + bestCombination.toStringEquipJugadors() +
-                "\nPeor combinación (desde el punto de vista de la puntuación): " + worseCombination.toStringEquipJugadors() +
+                "\nMejor combinación (desde el punto de vista de la puntuación): " + (bestCombination == null ? " none" : (bestCombination.toStringEquipJugadors()) +
+                "\n   Cost " + bestCombination.CostEquip() +", Points: " + bestCombination.PuntuacioEquip() + ".") +
+                "\nPeor combinación (desde el punto de vista de la puntuación): " + (worseCombination == null ? " none" : worseCombination.toStringEquipJugadors() +
+                "\n   Cost " + worseCombination.CostEquip() +", Points: " + worseCombination.PuntuacioEquip() + ".") +
                 "\n********************************************************" + Error.end_color);
     }
 
@@ -40,15 +50,18 @@ public class Statistics {
         numComb += evaluatorStatistics.getNumComb();
         numInvComb += evaluatorStatistics.getNumInvComb();
         numValidComb += evaluatorStatistics.getNumValidComb();
-        avgCostValidComb = ((avgCostValidComb * numValidComb) + (evaluatorStatistics.getAvgCostValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
-        avgScoreValidComb = ((avgScoreValidComb * numValidComb) + (evaluatorStatistics.getAvgScoreValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
-        if (bestScore == 0 || evaluatorStatistics.getBestScore() > bestScore){    //Best combination regarding points
-            bestScore = evaluatorStatistics.getBestScore();
-            bestCombination = evaluatorStatistics.getBestCombination();
-        }
-        if (worseScore == 0 || evaluatorStatistics.getWorseScore() < worseScore) {   //Worse combination regarding points
-            worseScore = evaluatorStatistics.getWorseScore();
-            worseCombination = evaluatorStatistics.getWorseCombination();
+        if (numValidComb != 0) {
+            avgCostValidComb = ((avgCostValidComb * numValidComb) + (evaluatorStatistics.getAvgCostValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
+            avgScoreValidComb = ((avgScoreValidComb * numValidComb) + (evaluatorStatistics.getAvgScoreValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
+
+            if (bestScore == 0 || evaluatorStatistics.getBestScore() > bestScore) {    //Best combination regarding points
+                bestScore = evaluatorStatistics.getBestScore();
+                bestCombination = evaluatorStatistics.getBestCombination();
+            }
+            if (worseScore == 0 || (evaluatorStatistics.getWorseScore() < worseScore && evaluatorStatistics.getWorseScore() != 0)) {   //Worse combination regarding points
+                worseScore = evaluatorStatistics.getWorseScore();
+                worseCombination = evaluatorStatistics.getWorseCombination();
+            }
         }
     }
 
@@ -59,7 +72,9 @@ public class Statistics {
                 "\nCoste promedio de las combinaciones válidas: " + avgCostValidComb +
                 "\nPuntuación promedio de las combinaciones válidas: " + avgScoreValidComb +
                 "\nMejor combinación (desde el punto de vista de la puntuación): " + bestCombination.toStringEquipJugadors() +
+                "\n   Cost " + bestCombination.CostEquip() +", Points: " + bestCombination.PuntuacioEquip() + "." +
                 "\nPeor combinación (desde el punto de vista de la puntuación): " + worseCombination.toStringEquipJugadors() +
+                "\n   Cost " + worseCombination.CostEquip() +", Points: " + worseCombination.PuntuacioEquip() + "." +
                 "\n********************************************************" + Error.end_color);
     }
 
@@ -87,19 +102,19 @@ public class Statistics {
         this.numValidComb = numValidComb;
     }
 
-    public int getAvgCostValidComb() {
+    public float getAvgCostValidComb() {
         return avgCostValidComb;
     }
 
-    public void setAvgCostValidComb(int avgCostValidComb) {
+    public void setAvgCostValidComb(float avgCostValidComb) {
         this.avgCostValidComb = avgCostValidComb;
     }
 
-    public int getAvgScoreValidComb() {
+    public float getAvgScoreValidComb() {
         return avgScoreValidComb;
     }
 
-    public void setAvgScoreValidComb(int avgScoreValidComb) {
+    public void setAvgScoreValidComb(float avgScoreValidComb) {
         this.avgScoreValidComb = avgScoreValidComb;
     }
 
