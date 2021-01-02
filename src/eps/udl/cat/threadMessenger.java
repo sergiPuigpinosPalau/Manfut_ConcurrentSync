@@ -17,7 +17,7 @@ public class threadMessenger extends Thread{
 
     private void printMessages(){
         for (String s : messageList) {
-            System.out.println(s);
+            System.out.print(s);
         }
         messageList.clear();
     }

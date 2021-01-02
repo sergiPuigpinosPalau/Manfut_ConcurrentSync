@@ -43,17 +43,16 @@ public class Statistics {
                 "\n   Cost " + bestCombination.CostEquip() +", Points: " + bestCombination.PuntuacioEquip() + ".") +
                 "\nPeor combinación (desde el punto de vista de la puntuación): " + (worseCombination == null ? " none" : worseCombination.toStringEquipJugadors() +
                 "\n   Cost " + worseCombination.CostEquip() +", Points: " + worseCombination.PuntuacioEquip() + ".") +
-                "\n********************************************************" + Error.end_color);
+                "\n********************************************************\n" + Error.end_color);
     }
 
     public void calculateGlobalStatistics(Statistics evaluatorStatistics){
         numComb += evaluatorStatistics.getNumComb();
         numInvComb += evaluatorStatistics.getNumInvComb();
         numValidComb += evaluatorStatistics.getNumValidComb();
-        if (numValidComb != 0) {
+        if (evaluatorStatistics.numValidComb != 0) {
             avgCostValidComb = ((avgCostValidComb * numValidComb) + (evaluatorStatistics.getAvgCostValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
             avgScoreValidComb = ((avgScoreValidComb * numValidComb) + (evaluatorStatistics.getAvgScoreValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
-
             if (bestScore == 0 || evaluatorStatistics.getBestScore() > bestScore) {    //Best combination regarding points
                 bestScore = evaluatorStatistics.getBestScore();
                 bestCombination = evaluatorStatistics.getBestCombination();
@@ -75,7 +74,7 @@ public class Statistics {
                 "\n   Cost " + bestCombination.CostEquip() +", Points: " + bestCombination.PuntuacioEquip() + "." +
                 "\nPeor combinación (desde el punto de vista de la puntuación): " + worseCombination.toStringEquipJugadors() +
                 "\n   Cost " + worseCombination.CostEquip() +", Points: " + worseCombination.PuntuacioEquip() + "." +
-                "\n********************************************************" + Error.end_color);
+                "\n********************************************************\n\n" + Error.end_color);
     }
 
     public int getNumComb() {

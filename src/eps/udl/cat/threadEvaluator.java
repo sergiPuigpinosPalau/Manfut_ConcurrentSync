@@ -19,14 +19,14 @@ public class threadEvaluator extends Thread{
     private final int M;
     private final int numOfThreads;
 
-    //private static boolean isNull = false;
+    //Shared variables
     public static JugadorsEquip MillorEquip = null;
     public static int MaxPuntuacio = -1;
     public static int threadsWaitingSummary = 0;
     public static int threadsFinished = 0;
     public static boolean finalPrint = false;
-    //public static threadMessenger messenger;
 
+    //Statistics
     private final Statistics statistics = new Statistics();
     public static Statistics globalStatistics = new Statistics();
 
@@ -125,7 +125,7 @@ public class threadEvaluator extends Thread{
     public static synchronized void checkTeam(int equip, JugadorsEquip jugadors, int PresupostFitxatges, int costEquip, int puntuacioEquip){
         if (puntuacioEquip > threadEvaluator.MaxPuntuacio && costEquip < PresupostFitxatges)
         {
-            threadMessenger.addMessageToQueue(Error.color_green + "Thread: " + Thread.currentThread().getId() + " Team " + equip + " -> " + " Cost: " + costEquip + " Points: " + puntuacioEquip + ". "+ Error.end_color);
+            threadMessenger.addMessageToQueue("Thread: " + Thread.currentThread().getId() + " Team " + equip + " -> " + Error.color_green + " Cost: " + costEquip + " Points: " + puntuacioEquip + ". \n"+ Error.end_color);
             // We have a new partial optimal team.
             threadEvaluator.MaxPuntuacio=puntuacioEquip;
             threadEvaluator.MillorEquip = jugadors;
