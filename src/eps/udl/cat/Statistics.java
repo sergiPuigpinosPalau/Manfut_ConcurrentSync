@@ -49,10 +49,10 @@ public class Statistics {
     public void calculateGlobalStatistics(Statistics evaluatorStatistics){
         numComb += evaluatorStatistics.getNumComb();
         numInvComb += evaluatorStatistics.getNumInvComb();
-        numValidComb += evaluatorStatistics.getNumValidComb();
         if (evaluatorStatistics.numValidComb != 0) {
-            avgCostValidComb = ((avgCostValidComb * numValidComb) + (evaluatorStatistics.getAvgCostValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
-            avgScoreValidComb = ((avgScoreValidComb * numValidComb) + (evaluatorStatistics.getAvgScoreValidComb() * evaluatorStatistics.getNumValidComb())) / numValidComb;
+            avgCostValidComb = ((avgCostValidComb * numValidComb) + (evaluatorStatistics.getAvgCostValidComb() * evaluatorStatistics.getNumValidComb())) / (numValidComb + evaluatorStatistics.getNumValidComb());
+            avgScoreValidComb = ((avgScoreValidComb * numValidComb) + (evaluatorStatistics.getAvgScoreValidComb() * evaluatorStatistics.getNumValidComb())) / (numValidComb + evaluatorStatistics.getNumValidComb());
+            numValidComb += evaluatorStatistics.getNumValidComb();
             if (bestScore == 0 || evaluatorStatistics.getBestScore() > bestScore) {    //Best combination regarding points
                 bestScore = evaluatorStatistics.getBestScore();
                 bestCombination = evaluatorStatistics.getBestCombination();
