@@ -70,10 +70,10 @@ public class Statistics {
                 "\nNúmero de combinaciones no válidas: " + numInvComb +
                 "\nCoste promedio de las combinaciones válidas: " + avgCostValidComb +
                 "\nPuntuación promedio de las combinaciones válidas: " + avgScoreValidComb +
-                "\nMejor combinación (desde el punto de vista de la puntuación): " + bestCombination.toStringEquipJugadors() +
-                "\n   Cost " + bestCombination.CostEquip() +", Points: " + bestCombination.PuntuacioEquip() + "." +
-                "\nPeor combinación (desde el punto de vista de la puntuación): " + worseCombination.toStringEquipJugadors() +
-                "\n   Cost " + worseCombination.CostEquip() +", Points: " + worseCombination.PuntuacioEquip() + "." +
+                "\nMejor combinación (desde el punto de vista de la puntuación): " + (bestCombination == null ? "none" : bestCombination.toStringEquipJugadors() +
+                "\n   Cost " + bestCombination.CostEquip() +", Points: " + bestCombination.PuntuacioEquip() + ".") +
+                "\nPeor combinación (desde el punto de vista de la puntuación): " + (worseCombination == null ? "none" : worseCombination.toStringEquipJugadors() +
+                "\n   Cost " + worseCombination.CostEquip() +", Points: " + worseCombination.PuntuacioEquip() + ".") +
                 "\n********************************************************\n\n" + Error.end_color);
     }
 
