@@ -14,7 +14,7 @@ public class Manfut {
         long startTime = System.nanoTime();
         Market          PlayersMarket;
         int             PresupostFitxatges, threads;
-        int             M = 2500;
+        int             M = 25000;
         JugadorsEquip   MillorEquip;
         Error           err;
 
