@@ -1,3 +1,10 @@
+/* ---------------------------------------------------------------
+Práctica 2.
+Código fuente: Statistics.java
+Grau Informàtica
+49259953W i Sergi Puigpinós Palau.
+47694432E i Jordi Lazo Florensa.
+--------------------------------------------------------------- */
 package eps.udl.cat;
 
 public class Statistics {

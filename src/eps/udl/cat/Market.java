@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------
-Práctica 1.
+Práctica 2.
 Código fuente: Market.java
 Grau Informàtica
 49259953W i Sergi Puigpinós Palau.

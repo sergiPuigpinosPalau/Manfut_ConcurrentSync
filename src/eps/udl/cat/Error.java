@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------
-Práctica 1.
+Práctica 2.
 Código fuente: Error.java
 Grau Informàtica
 49259953W i Sergi Puigpinós Palau.
